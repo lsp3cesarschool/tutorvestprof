@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="moderno">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TutorVest Professores - Protótipo</title>
+    <style>
+        /* ================= VARIÁVEIS DE TEMA ================= */
+        :root[data-theme="moderno"] {
+            --bg-color: #f0fdf4; /* Verde bem claro, remetendo a crescimento/aprovação */
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --brand-color: #16a34a; /* Verde principal */
+            --brand-hover: #15803d;
+            --sidebar-bg: #ffffff;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --border: 1px solid transparent;
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root[data-theme="minimalista"] {
+            --bg-color: #ffffff;
+            --surface-color: #ffffff;
+            --text-primary: #000000;
+            --text-secondary: #555555;
+            --brand-color: #000000;
+            --brand-hover: #333333;
+            --sidebar-bg: #fafafa;
+            --radius: 0px;
+            --shadow: none;
+            --border: 1px solid #e5e5e5;
+            --font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        :root[data-theme="classico"] {
+            --bg-color: #f4f1ea;
+            --surface-color: #ffffff;
+            --text-primary: #2c1810;
+            --text-secondary: #5c4d47;
+            --brand-color: #8b0000; /* Vinho acadêmico */
+            --brand-hover: #660000;
+            --sidebar-bg: #eae4d3;
+            --radius: 4px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+            --border: 1px solid #d1c7b8;
+            --font-family: 'Georgia', 'Times New Roman', serif;
+        }
+
+        /* ================= ESTILOS GERAIS ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-family); background-color: var(--bg-color);
+            color: var(--text-primary); transition: all 0.3s ease;
+            height: 100vh; overflow: hidden; display: flex;
+        }
+        button { font-family: inherit; cursor: pointer; border: none; }
+        .hidden { display: none !important; }
+
+        /* ================= TELA DE LOGIN ================= */
+        #login-view {
+            width: 100%; height: 100%; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .theme-selector {
+            position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; align-items: center;
+        }
+        .theme-selector select {
+            padding: 8px; border-radius: var(--radius); border: var(--border);
+            background: var(--surface-color); color: var(--text-primary); outline: none;
+            box-shadow: var(--shadow);
+        }
+        .login-box {
+            background: var(--surface-color); padding: 40px; border-radius: var(--radius);
+            box-shadow: var(--shadow); border: var(--border); width: 100%; max-width: 400px;
+            text-align: center;
+        }
+        .login-box h1 { margin-bottom: 10px; color: var(--brand-color); }
+        .login-box p { color: var(--text-secondary); margin-bottom: 30px; font-size: 0.9rem; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .input-group input {
+            width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid #ccc;
+            font-family: inherit; background: var(--bg-color); color: var(--text-primary);
+        }
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--brand-color); color: white;
+            font-weight: bold; border-radius: var(--radius); transition: 0.2s; font-size: 1rem;
+        }
+        .btn-primary:hover { background: var(--brand-hover); }
+
+        /* ================= DASHBOARD (PÓS-LOGIN) ================= */
+        #dashboard-view { width: 100%; height: 100%; display: flex; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px; background: var(--sidebar-bg); border-right: var(--border);
+            padding: 20px; display: flex; flex-direction: column; box-shadow: var(--shadow);
+        }
+        .sidebar-logo { font-size: 1.5rem; font-weight: bold; color: var(--brand-color); margin-bottom: 40px; }
+        .nav-item {
+            padding: 12px 15px; margin-bottom: 10px; border-radius: var(--radius);
+            color: var(--text-secondary); font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--brand-color); color: white;
+        }
+        .logout-btn { margin-top: auto; color: #dc2626; padding: 12px 15px; cursor: pointer; font-weight: bold; }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header-title { font-size: 2rem; margin-bottom: 30px; }
+        
+        /* Cards de Resumo */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card {
+            background: var(--surface-color); padding: 20px; border-radius: var(--radius);
+            box-shadow: var(--shadow); border: var(--border);
+        }
+        .stat-card h3 { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px; }
+        .stat-card .value { font-size: 2rem; font-weight: bold; color: var(--brand-color); }
+
+        /* Tabela de Tutorados */
+        .data-table { width: 100%; border-collapse: collapse; background: var(--surface-color); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: var(--border); }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .data-table th { background: var(--bg-color); font-weight: bold; color: var(--text-secondary); }
+        .tag { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+        .tag.alta { background: #dcfce7; color: #166534; }
+        .tag.media { background: #fef08a; color: #854d0e; }
+        .tag.baixa { background: #fee2e2; color: #991b1b; }
+        .btn-action { padding: 6px 12px; background: var(--bg-color); color: var(--brand-color); border: 1px solid var(--brand-color); border-radius: var(--radius); font-size: 0.85rem; }
+        .btn-action:hover { background: var(--brand-color); color: white; }
+
+        /* Agenda Simples */
+        .agenda-item {
+            background: var(--surface-color); padding: 15px 20px; border-radius: var(--radius);
+            box-shadow: var(--shadow); border: var(--border); margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .agenda-info h4 { margin-bottom: 5px; }
+        .agenda-info p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    </style>
+</head>
+<body>
+
+    <div id="login-view">
+        <div class="theme-selector">
+            <label for="themeSelect">Tema:</label>
+            <select id="themeSelect" onchange="mudarTema(this.value)">
+                <option value="moderno">Moderno (Foco em Aprovação)</option>
+                <option value="minimalista">Minimalista</option>
+                <option value="classico">Clássico (Acadêmico)</option>
+            </select>
+        </div>
+
+        <div class="login-box">
+            <h1>TutorVest</h1>
+            <p>Portal Exclusivo para Professores/Tutores</p>
+            <form onsubmit="fazerLogin(event)">
+                <div class="input-group">
+                    <label>E-mail do Tutor</label>
+                    <input type="email" value="professor@gge.com.br" required>
+                </div>
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" value="123456" required>
+                </div>
+                <button type="submit" class="btn-primary">Acessar Painel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard-view" class="hidden">
+        
+        <div class="sidebar">
+            <div class="sidebar-logo">TutorVest</div>
+            <div class="nav-item active" onclick="navegar('visao-geral', this)">Visão Geral</div>
+            <div class="nav-item" onclick="navegar('meus-tutorados', this)">Meus Tutorados</div>
+            <div class="nav-item" onclick="navegar('agenda', this)">Agenda de Mentoria</div>
+            
+            <div class="logout-btn" onclick="fazerLogout()">Sair da Conta</div>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="sec-visao-geral" class="secao">
+                <h2 class="header-title">Olá, Prof. Carlos!</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Alunos sob sua tutoria</h3>
+                        <div class="value">12</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Média Geral (Último Simulado)</h3>
+                        <div class="value">720 pts</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Mentorias Pendentes (Semana)</h3>
+                        <div class="value">4</div>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary);">O engajamento geral da sua turma subiu 15% após a última rodada de redações. Continue o bom trabalho!</p>
+            </div>
+
+            <div id="sec-meus-tutorados" class="secao hidden">
+                <h2 class="header-title">Acompanhamento de Alunos</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Aluno(a)</th>
+                            <th>Foco (Vestibular)</th>
+                            <th>Pontuação Simulado</th>
+                            <th>Engajamento</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-alunos-body">
+                        </tbody>
+                </table>
+            </div>
+
+            <div id="sec-agenda" class="secao hidden">
+                <h2 class="header-title">Próximos Encontros</h2>
+                <div id="agenda-lista">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Controle de Tema ---
+        function mudarTema(tema) {
+            document.documentElement.setAttribute('data-theme', tema);
+        }
+
+        // --- 2. Navegação Básica ---
+        function fazerLogin(e) {
+            e.preventDefault(); // Evita o recarregamento da página
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            carregarDadosMocados();
+        }
+
+        function fazerLogout() {
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('login-view').classList.remove('hidden');
+        }
+
+        function navegar(secaoId, elementoClicado) {
+            // Esconde todas as seções
+            document.querySelectorAll('.secao').forEach(sec => sec.classList.add('hidden'));
+            // Remove a classe active de todos os itens do menu
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            // Mostra a seção desejada e marca o menu
+            document.getElementById('sec-' + secaoId).classList.remove('hidden');
+            elementoClicado.classList.add('active');
+        }
+
+        // --- 3. Dados Mocados e Renderização ---
+        const alunosMocados = [
+            { nome: "Ana Beatriz", meta: "Medicina - UFPE", nota: 815, engajamento: "alta", statusText: "Alto" },
+            { nome: "João Pedro", meta: "Eng. da Computação", nota: 740, engajamento: "media", statusText: "Médio" },
+            { nome: "Mariana Silva", meta: "Direito - Unicap", nota: 690, engajamento: "baixa", statusText: "Baixo (Alerta)" },
+            { nome: "Lucas Mendes", meta: "Odontologia", nota: 780, engajamento: "alta", statusText: "Alto" }
+        ];
+
+        const agendaMocada = [
+            { aluno: "Mariana Silva", data: "Hoje, 14:30", pauta: "Atraso nas entregas de Redação" },
+            { aluno: "João Pedro", data: "Amanhã, 10:00", pauta: "Revisão de plano de estudos em Física" },
+            { aluno: "Ana Beatriz", data: "Quinta-feira, 16:00", pauta: "Simulação de entrevista / Controle de ansiedade" }
+        ];
+
+        function carregarDadosMocados() {
+            // Renderizar Tabela de Alunos
+            const tbody = document.getElementById('tabela-alunos-body');
+            tbody.innerHTML = '';
+            alunosMocados.forEach(aluno => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${aluno.nome}</strong><br><small style="color:var(--text-secondary)">Turma 3º Ano GGE</small></td>
+                        <td>${aluno.meta}</td>
+                        <td><strong>${aluno.nota}</strong> pts</td>
+                        <td><span class="tag ${aluno.engajamento}">${aluno.statusText}</span></td>
+                        <td><button class="btn-action" onclick="alert('Abrindo plano de intervenção de ${aluno.nome}...')">Ver Detalhes</button></td>
+                    </tr>
+                `;
+            });
+
+            // Renderizar Agenda
+            const listaAgenda = document.getElementById('agenda-lista');
+            listaAgenda.innerHTML = '';
+            agendaMocada.forEach(item => {
+                listaAgenda.innerHTML += `
+                    <div class="agenda-item">
+                        <div class="agenda-info">
+                            <h4>Mentoria com ${item.aluno}</h4>
+                            <p><strong>Pauta:</strong> ${item.pauta}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="tag alta">${item.data}</span><br>
+                            <button class="btn-action" style="margin-top: 10px;" onclick="alert('Iniciando chamada com ${item.aluno}...')">Iniciar</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
