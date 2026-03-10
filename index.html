@@ -76,7 +76,15 @@
             box-shadow: var(--shadow); border: var(--border); width: 100%; max-width: 400px;
             text-align: center; border-top: 5px solid var(--brand-color);
         }
-        .login-box h1 { margin-bottom: 10px; color: var(--brand-color); }
+        
+        /* Estilos do Logo no Login */
+        .login-logo {
+            width: 90px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .login-box h1 { margin-bottom: 5px; color: var(--brand-color); font-size: 1.8rem; }
         .login-box p { color: var(--text-secondary); margin-bottom: 30px; font-size: 0.9rem; }
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
@@ -101,11 +109,27 @@
             width: 260px; background: var(--sidebar-bg); border-right: var(--border);
             padding: 20px; display: flex; flex-direction: column; box-shadow: var(--shadow);
         }
-        .sidebar-logo { 
-            font-size: 1.8rem; font-weight: bold; color: var(--brand-color); 
-            margin-bottom: 40px; text-align: center; border-bottom: 2px solid var(--brand-hover);
-            padding-bottom: 10px;
+        
+        /* Estilos do Logo na Sidebar */
+        .sidebar-logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--brand-hover);
+            padding-bottom: 15px;
         }
+        .sidebar-logo-img {
+            width: 40px;
+            height: auto;
+        }
+        .sidebar-logo-text {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--brand-color);
+        }
+
         .nav-item {
             padding: 12px 15px; margin-bottom: 10px; border-radius: var(--radius);
             color: var(--text-secondary); font-weight: bold; cursor: pointer; transition: 0.2s;
@@ -165,6 +189,7 @@
         </div>
 
         <div class="login-box">
+            <img src="tutorvest.png" alt="Logo TutorVest" class="login-logo">
             <h1>TutorVest</h1>
             <p>Portal do Professor</p>
             <form onsubmit="fazerLogin(event)">
@@ -184,7 +209,11 @@
     <div id="dashboard-view" class="hidden">
         
         <div class="sidebar">
-            <div class="sidebar-logo">TutorVest</div>
+            <div class="sidebar-logo-container">
+                <img src="tutorvest.png" alt="Ícone TutorVest" class="sidebar-logo-img">
+                <span class="sidebar-logo-text">TutorVest</span>
+            </div>
+            
             <div class="nav-item active" onclick="navegar('visao-geral', this)">Visão Geral</div>
             <div class="nav-item" onclick="navegar('meus-tutorados', this)">Meus Tutorados</div>
             <div class="nav-item" onclick="navegar('simulados', this)">Materiais e Simulados</div>
@@ -297,25 +326,20 @@
         function fazerLogin(e) {
             e.preventDefault();
             
-            // Pega o email e extrai o nome antes do @
             const email = document.getElementById('email-input').value;
             let nomeProf = email.split('@')[0];
             
-            // Capitaliza a primeira letra do nome
             if(nomeProf.length > 0) {
                 nomeProf = nomeProf.charAt(0).toUpperCase() + nomeProf.slice(1);
             } else {
                 nomeProf = "Professor";
             }
 
-            // Atualiza a saudação no Dashboard
             document.getElementById('saudacao-prof').innerText = `Bem-vindo, Prof. ${nomeProf}!`;
 
-            // Troca de tela
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             
-            // Renderiza os dados nas tabelas
             renderizarAlunos();
             renderizarProvas(); 
         }
@@ -332,7 +356,7 @@
             elementoClicado.classList.add('active');
         }
 
-        // --- 3. DADOS MOCADOS DOS ALUNOS (12 Alunos) ---
+        // --- 3. DADOS MOCADOS DOS ALUNOS ---
         const alunosMocados = [
             { nome: "Ana Beatriz", meta: "Medicina - UFPE", nota: 815, tag: "alta", status: "Excelente" },
             { nome: "João Pedro", meta: "Eng. da Computação", nota: 740, tag: "media", status: "Estável" },
@@ -395,7 +419,6 @@
             document.getElementById('count-simulados').innerText = provas.length;
         }
 
-        // Função para pegar a data atual no formato YYYY-MM-DD para o input type="date"
         function getDataDeHoje() {
             const hoje = new Date();
             const ano = hoje.getFullYear();
@@ -410,8 +433,6 @@
             document.getElementById('prova-id').value = ""; 
             document.getElementById('prova-titulo').value = "";
             document.getElementById('prova-link').value = "";
-            
-            // Preenche automaticamente com a data de hoje ao criar um novo material
             document.getElementById('prova-data').value = getDataDeHoje();
         }
 
